@@ -4,7 +4,7 @@ import "github.com/gin-gonic/gin"
 
 //add to cart
 
-func AddToCart() gin.Handler {
+func AddToCart() gin.HandlerFunc {
 
 }
 
