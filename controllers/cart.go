@@ -1,29 +1,89 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"context"
+	"errors"
+	"log"
+	"net/http"
+	"time"
 
-//add to cart
+	"github.com/ammar-nousher-ali/ecommerce/database"
+	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+)
 
-func AddToCart() gin.HandlerFunc {
+type Application struct {
+	prodCollection *mongo.Collection
+	userCollection *mongo.Collection
+}
+
+func NewApplication(prodCollection, userCollection *mongo.Collection) *Application {
+	return &Application{
+		prodCollection: prodCollection,
+		userCollection: userCollection,
+	}
+}
+
+// add to cart
+func (app *Application) AddToCart() gin.HandlerFunc {
+
+	return func(c *gin.Context) {
+
+		productQueryID := c.Query("id")
+		if productQueryID == "" {
+			log.Println("product id is empty")
+			_ = c.AbortWithError(http.StatusBadRequest, errors.New("product id is empty"))
+			return
+		}
+
+		userQueryID := c.Query("userID")
+		if userQueryID == "" {
+
+			log.Println("user id is empty")
+			_ = c.AbortWithError(http.StatusBadRequest, errors.New("user id is empty"))
+			return
+
+		}
+
+		productID, err := primitive.ObjectIDFromHex(productQueryID)
+
+		if err != nil {
+			log.Println(err)
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+		}
+
+		var ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		err = database.AddProductToCart(ctx, app.prodCollection, app.userCollection, productID, userQueryID)
+		if err != nil {
+			c.IndentedJSON(http.StatusInternalServerError, err)
+		}
+
+		c.IndentedJSON(200, "Successfully added to the cart")
+
+	}
 
 }
 
-//remove item from cart
+// remove item from cart
 func RemoveItem() gin.HandlerFunc {
 
 }
 
-//get item from cart
+// get item from cart
 func GetItemFromCart() gin.HandlerFunc {
 
 }
 
-//buy from cart
+// buy from cart
 func BuyFromCart() gin.HandlerFunc {
 
 }
 
-//instant buy
+// instant buy
 func InstantBuy() gin.HandlerFunc {
 
 }

@@ -109,7 +109,7 @@ func Signup() gin.HandlerFunc {
 //login
 func Login() gin.HandlerFunc {
 
-	return func(ctx *gin.Context) {
+	return func(c *gin.Context) {
 
 
 		var ctx,cancel = context.WithTimeout(context.Background(),100*time.Second)
@@ -146,10 +146,6 @@ func Login() gin.HandlerFunc {
 		generate.UpdateAllTokens(token, refreshToken,founduser.User_ID)
 
 		c.JSON(http.StatusFound, founduser)
-
-
-
-
 
 
 	}
