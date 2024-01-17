@@ -7,19 +7,57 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ammar-nousher-ali/ecommerce/database"
 	"github.com/ammar-nousher-ali/ecommerce/models"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"github.com/go-playground/validator/v10"
+
+	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/tools/go/analysis/passes/nilfunc"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
+
+
+var UserCollection *mongo.Collection = database.UserData(database.Client, "Users")
+var ProductCollection  *mongo.Collection = database.ProductData(database.Client,"Products")
+var Validate = validator.New()	
 
 //hash passowrd
 func HashPassowrd(password string) string {
 
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+
+	if err!=nil {
+
+		log.Panic(err)
+
+		
+	}
+
+	return string(bytes)
+
 }
 
 //verify password
-func VerifyPassword(userPassword string, givernPassword string) (bool, string) {
+func VerifyPassword(userPassword string, givenPassword string) (bool, string) {
+
+
+	err := bcrypt.CompareHashAndPassword([]byte(givenPassword), []byte(userPassword))
+	valid := true
+	msg := ""
+	if err!=nil {
+		msg = "Login or passowrd is incorrect"
+		valid = false
+
+	}
+
+	return valid,msg
+
+
+
 
 }
 
@@ -160,6 +198,46 @@ func ProductViewerAdmin() gin.HandlerFunc {
 
 //search product
 func SearchProduct() gin.HandlerFunc {
+
+
+	return func(c *gin.Context) {
+
+		var productlist []models.Product
+		var ctx, cancel = context.WithTimeout(context.Background(),100*time.Second)
+		defer cancel()
+
+
+		cursor, err := ProductCollection.Find(ctx, bson.D{{}})
+
+		if err!=nil {
+
+			c.IndentedJSON(http.StatusInternalServerError,"something went wrong pleae try after sometime")
+			return
+			
+		}
+
+		err = cursor.All(ctx, &productlist)
+		if err!=nil {
+			log.Println(err)
+			c.AbortWithStatus(http.StatusInternalServerError)
+			return
+
+		}
+
+		defer cursor.Close()
+
+		if err:= cursor.err(); err!=nil {
+			log.Println(err)
+			c.IndentedJSON(400,"invalid")
+			return
+		
+		}
+
+		defer cancel()
+		c.IndentedJSON(200, productlist)
+
+
+	}
 
 }
 
