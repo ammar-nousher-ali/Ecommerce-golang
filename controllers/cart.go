@@ -11,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"golang.org/x/tools/go/analysis/passes/nilfunc"
 )
 
 type Application struct {
@@ -127,25 +126,21 @@ func (app *Application) BuyFromCart() gin.HandlerFunc {
 		if userQueryID == "" {
 
 			log.Panicln("user id is empty")
-			_ = c.AbortWithError(http.StatusBadRequest,errors.New("UserID is empty"))
+			_ = c.AbortWithError(http.StatusBadRequest, errors.New("UserID is empty"))
 
 		}
 
-
-		var ctx, cancel = context.WithTimeout(context.Background(),100*time.Second)
+		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 
 		defer cancel()
 
 		err := database.BuyItemFromCart(ctx, app.userCollection, userQueryID)
-		if err!=nil {
-			c.IndentedJSON(http.StatusInternalServerError,err)
+		if err != nil {
+			c.IndentedJSON(http.StatusInternalServerError, err)
 			return
 		}
 
 		c.IndentedJSON("successfully placed the order")
-
-
-
 
 	}
 
