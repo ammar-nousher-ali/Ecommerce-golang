@@ -4,9 +4,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/ammar-nousher-ali/ecommerce/controllers"
-	"github.com/ammar-nousher-ali/ecommerce/database"
-	"github.com/ammar-nousher-ali/ecommerce/middleware"
+	"github.com/ammar-nousher-ali/go-ecommerce/controllers"
+	"github.com/ammar-nousher-ali/go-ecommerce/database"
+	"github.com/ammar-nousher-ali/go-ecommerce/middleware"
 	"github.com/gin-gonic/gin"
 )
 

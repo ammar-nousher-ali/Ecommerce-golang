@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ammar-nousher-ali/ecommerce/models"
+	"github.com/ammar-nousher-ali/go-ecommerce/models"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
