@@ -109,7 +109,7 @@ func BuyItemFromCart(ctx context.Context, userCollection *mongo.Collection, user
 	unwind := bson.D{{Key: "$unwind", Value: bson.D{primitive.E{Key: "path", Value: "$usercart"}}}}
 	grouping := bson.D{{Key: "$group", Value: bson.D{primitive.E{Key: "_id", Value: "$_id"}, {Key: "total", Value: bson.D{primitive.E{Key: "$sum", Value: "$usercart.price"}}}}}}
 
-	currentresults, err := userCollection.Aggregate(ctx, mongo.Pipeline(unwind, grouping))
+	currentresults, err := userCollection.Aggregate(ctx, mongo.Pipeline{unwind, grouping})
 	ctx.Done()
 
 	if err != nil {

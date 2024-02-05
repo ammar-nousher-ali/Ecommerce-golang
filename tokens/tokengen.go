@@ -1,6 +1,7 @@
 package tokens
 
 import (
+	"context"
 	"log"
 	"os"
 	"time"
@@ -10,6 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 
@@ -22,11 +24,11 @@ type SignedDetails struct{
 	jwt.StandardClaims
 }
 
-var UserData *mongo.Collection = database.userData(database.Client, "Users")
+var UserData *mongo.Collection = database.UserData(database.Client, "Users")
 
 var SECRET_KEY = os.Getenv("SECRET_KEY")
 
-func TokenGenerator(email string, firstname string, lastname string, uid string(signedtoken string, signedrefreshedtoken string,err error )){
+func TokenGenerator(email string, firstname string, lastname string, uid string)(signedtoken string, signedrefreshedtoken string,err error){
 
 	claims := &SignedDetails{
 		Email: email,
@@ -105,7 +107,7 @@ func ValidateToken(signedtoken string)(claims *SignedDetails, msg string){
 	}
 
 
-	claims, ok := token.Claims(*SignedDetails)
+	claims, ok := token.Claims.(*SignedDetails)
 	if !ok {
 
 		msg = "the token in invalid"

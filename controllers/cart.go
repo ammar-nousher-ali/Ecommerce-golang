@@ -158,7 +158,7 @@ func GetItemFromCart() gin.HandlerFunc {
 		}
 
 		var listing []bson.M
-		pointcursor.All(ctx, &listing); err!= nil{
+		if err = pointcursor.All(ctx, &listing); err!= nil{
 			log.Println(err)
 			c.AbortWithStatus(http.StatusInternalServerError)
 
@@ -201,7 +201,7 @@ func (app *Application) BuyFromCart() gin.HandlerFunc {
 			return
 		}
 
-		c.IndentedJSON("successfully placed the order")
+		c.IndentedJSON(200,"successfully placed the order")
 
 	}
 
